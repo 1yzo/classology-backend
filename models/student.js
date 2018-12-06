@@ -10,6 +10,7 @@ const gradeSchema = new Schema({
 });
 
 const studentSchema = new Schema({
+    userId: { type: ObjectId, required: true },
     schoolId: { type: String, required: true },
     assignments: [ObjectId],
     classes: [ObjectId],

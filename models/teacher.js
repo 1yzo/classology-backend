@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const ObjectId = mongoose.SchemaTypes.ObjectId;
 
 const teacherSchema = new Schema({
+    userId: { type: ObjectId, require: true },
     name: { type: String, required: true },
     assignments: [ObjectId],
     classes: [ObjectId]

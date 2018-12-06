@@ -25,13 +25,17 @@ router.post('/signup', (req, res) => {
         role
     });
     user.save()
-        .then(() => {
+        .then(({ _id }) => {
             if (role === 'TEACHER') {
-               const teacher = new Teacher({ name });
+               const teacher = new Teacher({
+                    userId: _id,
+                    name
+                });
                return teacher.save();
             }
             if (role === 'STUDENT') {
                 const student = new Student({
+                    userId: _id,
                     name,
                     schoolId: req.body.schoolId
                 });
@@ -40,6 +44,40 @@ router.post('/signup', (req, res) => {
         })
         .then( entity => res.json('Success, user created!'))
         .catch(err => res.status(500).json(err));
+});
+
+router.get('/login', (req, res) => {
+    const { email, password } = req.body;
+    User.findOne({ email })
+        .then(user => {
+            if (!user) {
+                res.status(404).json('User not found');
+            } else {
+                user.comparePassword(password, (err, isMatch) => {
+                    if (isMatch && !err) {
+                        const token = jwt.encode(user, secrets.secret);
+                        res.json(`JWT ${token}`);
+                    } else {
+                        res.status(401).json('Authentication failed: Wrong password');
+                    }
+                });
+            }
+        })
+        .catch(err => res.status(500).json(err));
+});
+
+router.get('/user', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const { role, _id } = req.user;
+    if (role === 'TEACHER') {
+        Teacher.findOne({ userId: _id })
+            .then(teacher => res.json(teacher))
+            .catch(err => res.status(500).json(err));
+    }
+    if (role === 'STUDENT') {
+        Student.findOne({ userId: _id })
+            .then(student => res.json(student))
+            .catch(err => res.status(500).json(err));
+    }
 });
 
 module.exports = router;
