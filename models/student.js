@@ -1,0 +1,21 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = mongoose.SchemaTypes.ObjectId;
+
+const gradeSchema = new Schema({
+    assignmentName: { type: String, required: true },
+    assignmentId: { type: ObjectId, required: true },
+    correct: [Number],  // question numbers
+    incorrect: [Number]
+});
+
+const studentSchema = new Schema({
+    schoolId: { type: String, required: true },
+    assignments: [ObjectId],
+    classes: [ObjectId],
+    grades: [gradeSchema]
+});
+
+const Student = mongoose.model('Student', studentSchema);
+
+module.exports = Student;
