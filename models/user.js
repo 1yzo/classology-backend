@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const Schema = mongoose.Schema;
 
+const { userTypes } = require('../constants');
+
 const userSchema = new Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -9,11 +11,7 @@ const userSchema = new Schema({
 });
 
 function validateRole(value) {
-    if (value === 'TEACHER' || value === 'STUDENT') {
-        return true;
-    } else {
-        return false;
-    }
+    return Object.values(userTypes).includes(value);
 }
 
 userSchema.pre('save', function(next) {

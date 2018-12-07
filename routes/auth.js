@@ -7,13 +7,14 @@ const User = require('../models/user');
 const Teacher = require('../models/Teacher');
 const Student = require('../models/Student');
 const secrets = require('../secrets');
+const { userTypes } = require('../constants');
 
 const router = express.Router();
 
 router.post('/signup', (req, res) => {
     const { email, password, name, role } = req.body;
 
-    if (role === 'STUDENT') {
+    if (role === userTypes.STUDENT) {
         if (!req.body.schoolId) {
             res.status(400).json('SchoolId is required for Students');
         }
@@ -26,14 +27,14 @@ router.post('/signup', (req, res) => {
     });
     user.save()
         .then(({ _id }) => {
-            if (role === 'TEACHER') {
+            if (role === userTypes.TEACHER) {
                const teacher = new Teacher({
                     userId: _id,
                     name
                 });
                return teacher.save();
             }
-            if (role === 'STUDENT') {
+            if (role === userTypes.STUDENT) {
                 const student = new Student({
                     userId: _id,
                     name,
@@ -68,12 +69,12 @@ router.get('/login', (req, res) => {
 
 router.get('/user', passport.authenticate('jwt', { session: false }), (req, res) => {
     const { role, _id } = req.user;
-    if (role === 'TEACHER') {
+    if (role === userTypes.TEACHER) {
         Teacher.findOne({ userId: _id })
             .then(teacher => res.json(teacher))
             .catch(err => res.status(500).json(err));
     }
-    if (role === 'STUDENT') {
+    if (role === userTypes.STUDENT) {
         Student.findOne({ userId: _id })
             .then(student => res.json(student))
             .catch(err => res.status(500).json(err));
