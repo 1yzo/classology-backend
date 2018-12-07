@@ -6,13 +6,14 @@ const ObjectId = mongoose.SchemaTypes.ObjectId;
 const classAssignmentSchema = new Schema({
     startDate: { type: String, required: true },
     endDate: { type: String, required: true },
-    assignmentId: ObjectId
+    assignmentId: { type: ObjectId, ref: 'Assignment' }
 });
 
 const classSchema = new Schema({
+    teacher: { type: ObjectId, ref: 'Teacher', required: true },
     name: { Type: String, required: true },
     description: String,
-    students: [ObjectId],
+    students: [{ type: ObjectId, ref: 'Student' }],
     classAssignments: [classAssignmentSchema]
 });
 

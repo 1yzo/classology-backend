@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 const ObjectId = mongoose.SchemaTypes.ObjectId;
 
 const teacherSchema = new Schema({
-    userId: { type: ObjectId, require: true },
+    userId: { type: ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
-    assignments: [ObjectId],
-    classes: [ObjectId]
+    assignments: [{ type: ObjectId, ref: 'Assignment' }],
+    classes: [{ type: ObjectId, ref: 'Class' }]
 });
 
 const Teacher = mongoose.model('Teacher', teacherSchema);

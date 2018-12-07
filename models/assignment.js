@@ -16,6 +16,10 @@ function typeValidator(value) {
 }
 
 const assignmentSchema = new Schema({
+    teacher: { type: ObjectId, ref: 'Teacher', required: true },
     name: { type: String, require: true },
     questions: [questionSchema]
 });
+
+
+const Assignment = mongoose.model('Assignment', assignmentSchema);
