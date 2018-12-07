@@ -5,12 +5,14 @@ const cors = require('cors');
 
 require('./mongo').connect();
 const auth = require('./routes/auth');
+const assignments = require('./routes/assignments');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 // Routes
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/assignments', assignments);
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));

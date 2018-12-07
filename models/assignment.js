@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.SchemaTypes.ObjectId;
 
-const { questionTypes } = require('../contstants');
+const { questionTypes } = require('../constants');
 
 const questionSchema = new Schema({
     type: { type: String, required: true, validate: typeValidator },
@@ -23,3 +23,5 @@ const assignmentSchema = new Schema({
 
 
 const Assignment = mongoose.model('Assignment', assignmentSchema);
+
+module.exports = Assignment;
