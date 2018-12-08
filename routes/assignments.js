@@ -33,6 +33,17 @@ router.get('/:id', (req, res) => {
         .catch(err => res.status(500).json(err));
 })
 
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    Assignment.findOneAndDelete({ _id: id })
+        .then(assignment => {
+            if (!assignment) {
+                res.status(404).json('Assignment not found');
+            } else {
+                res.json('Success, assignment deleted!');
+            }
+        });
+});
 // Routes related to questions
 router.post('/:assignmentId/questions', (req, res) => {
     const { assignmentId } = req.params;
@@ -53,6 +64,17 @@ router.get('/:assignmentId/questions/:id', (req, res) => {
                 res.json(question);
             }
         });
+});
+
+router.delete('/:assignmentId/questions/:id', (req, res) => {
+    const { assignmentId, id } = req.params;
+    Assignment.findOne({ _id: assignmentId })
+        .then(assignment => {
+            assignment.questions.id(id).remove();
+            return assignment.save();
+        })
+        .then(() => res.json('Success, question deleted!'))
+        .catch(err => res.status(500).json(err));
 });
 
 module.exports = router;
