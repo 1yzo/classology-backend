@@ -31,7 +31,13 @@ router.get('/:id', (req, res) => {
             }
         })
         .catch(err => res.status(500).json(err));
-})
+});
+
+router.update('/:id', (req, res) => {
+    const { id } = req.params;
+    const { updates } = req.body;
+    Assignment.updateOne({ _id: id }, { ...updates });
+});
 
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
@@ -79,4 +85,4 @@ router.delete('/:assignmentId/questions/:id', (req, res) => {
 
 module.exports = router;
 
-// TO-DO: setup delete for assignments and questions, setup update for assignments
+// TODO setup update for assignments and questions
