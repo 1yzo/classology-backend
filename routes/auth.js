@@ -17,6 +17,7 @@ router.post('/signup', (req, res) => {
     if (role === userTypes.STUDENT) {
         if (!req.body.schoolId) {
             res.status(400).json('SchoolId is required for Students');
+            return;
         }
     }
 

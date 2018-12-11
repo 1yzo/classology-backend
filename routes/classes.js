@@ -33,6 +33,46 @@ router.get('/:id', (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
+router.put('/:id', (req, res) => {
+    const { id } = req.params;
+    const updates = req.body;
+    Class.findOneAndUpdate({ _id: id }, { ...updates })
+        .then(payloadClass => {
+            if (payloadClass) {
+                res.json('Success, class updated!');
+            } else {
+                res.status(404).json('Class not found');
+            }
+        })
+        .catch(err => res.status(500).json(err));
+});
 
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const { teacher } = await Class.findOneAndDelete({ _id: id });
+        await Teacher.findOneAndUpdate({ _id: teacher }, { $pull: { classes: id } });
+        res.json('Success, class deleted!');
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+router.put('/:classId/students', (req, res) => {
+    const { classId } = req.params;
+    const { student } = req.body;
+    Class.findOneAndUpdate({ _id: classId }, { $push: { students: student } })
+        .then(() => res.json('Success, student added to class!'))
+        .catch(err => res.status(500).json(err));
+});
+
+router.delete('/:classId/students/:studentId', (req, res) => {
+    const { classId, studentId } = req.params;
+    Class.findOneAndUpdate({ _id: classId }, { $pull: { students: studentId } })
+        .then(() => res.json('Success, student removed from class!'))
+        .catch(err => res.status(500).json(err));
+});
 
 module.exports = router;
+
+//TODO remove/add class ids to student document as well
