@@ -11,7 +11,7 @@ const classAssignmentSchema = new Schema({
 
 const classSchema = new Schema({
     teacher: { type: ObjectId, ref: 'Teacher', required: true },
-    name: { Type: String, required: true },
+    name: { type: String, required: true },
     description: String,
     students: [{ type: ObjectId, ref: 'Student' }],
     classAssignments: [classAssignmentSchema]

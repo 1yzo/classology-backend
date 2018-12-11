@@ -9,6 +9,6 @@ const teacherSchema = new Schema({
     classes: [{ type: ObjectId, ref: 'Class' }]
 });
 
-const Teacher = mongoose.model('Teacher', teacherSchema);
+const Teacher = mongoose.models['Teacher'] || mongoose.model('Teacher', teacherSchema);
 
 module.exports = Teacher;
