@@ -77,7 +77,29 @@ router.get('/:assignmentId/questions/:id', (req, res) => {
             } else {
                 res.json(question);
             }
-        });
+        })
+        .catch(err => res.status(500).json(err));
+});
+
+router.put('/:assignmentId/questions/:id', (req, res) => {
+    const { assignmentId, id } = req.params;
+    const updates = req.body;
+    Assignment.findOne({ _id: assignmentId })
+        .then(assignment => {
+            const question = assignment.questions.id(id);
+            if (question) {
+                question.set({ ...updates });
+                return assignment.save();
+            }
+        })
+        .then(info => {
+            if (!info) {
+                res.status(404).json('Question not found');
+            } else {
+                res.json('Success, question updated!');
+            }
+        })
+        .catch(err => res.status(500).json(err));
 });
 
 router.delete('/:assignmentId/questions/:id', (req, res) => {
