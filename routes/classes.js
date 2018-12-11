@@ -3,6 +3,7 @@ const router = express.Router();
 
 const Class = require('../models/class');
 const Teacher = require('../models/teacher');
+const Student = require('../models/student');
 
 router.post('/', async (req, res) => {
     const { teacher, name, description } = req.body;
@@ -13,7 +14,7 @@ router.post('/', async (req, res) => {
     });
     try {
         const { id } = await newClass.save();
-        await Teacher.findOneAndUpdate({ _id: teacher }, { $push: { classes: id } });
+        await Teacher.findOneAndUpdate({ _id: teacher }, { $addToSet: { classes: id } });
         res.json('Success, class created!');
     } catch (err) {
         res.status(500).json(err);
@@ -58,6 +59,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// Routes related to students
 router.get('/:id/students', (req, res) => {
     const { id } = req.params;
     Class.findOne({ _id: id })
@@ -71,7 +73,8 @@ router.get('/:id/students', (req, res) => {
 router.put('/:classId/students', (req, res) => {
     const { classId } = req.params;
     const { student } = req.body;
-    Class.findOneAndUpdate({ _id: classId }, { $push: { students: student } })
+    Class.findOneAndUpdate({ _id: classId }, { $addToSet: { students: student } })
+        .then(() => Student.findOneAndUpdate({ _id: student }, { $addToSet: { classes: classId } }))
         .then(() => res.json('Success, student added to class!'))
         .catch(err => res.status(500).json(err));
 });
@@ -79,6 +82,7 @@ router.put('/:classId/students', (req, res) => {
 router.delete('/:classId/students/:studentId', (req, res) => {
     const { classId, studentId } = req.params;
     Class.findOneAndUpdate({ _id: classId }, { $pull: { students: studentId } })
+        .then(() => Student.findOneAndUpdate({ _id: studentId }, { $pull: { classes: classId } }))
         .then(() => res.json('Success, student removed from class!'))
         .catch(err => res.status(500).json(err));
 });

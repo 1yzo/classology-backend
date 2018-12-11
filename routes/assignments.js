@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
     });
     try {
         const { _id } = await assignment.save();
-        await Teacher.findOneAndUpdate({ _id: teacher }, { $push: { assignments: _id } });
+        await Teacher.findOneAndUpdate({ _id: teacher }, { $addToSet: { assignments: _id } });
         res.json('Success, assignment created!');
     } catch (err) {
         res.status(500).send(err);
@@ -67,7 +67,7 @@ router.delete('/:id', (req, res) => {
 router.post('/:assignmentId/questions', (req, res) => {
     const { assignmentId } = req.params;
     const { ...question } = req.body;
-    Assignment.findOneAndUpdate({ _id: assignmentId }, { $push: { questions: question } })
+    Assignment.findOneAndUpdate({ _id: assignmentId }, { $addToSet: { questions: question } })
         .then(() => res.json('Success, question created!'))
         .catch(err => res.status(500).json(err));
 });
