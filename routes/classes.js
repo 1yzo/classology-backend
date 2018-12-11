@@ -87,6 +87,26 @@ router.delete('/:classId/students/:studentId', (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
-module.exports = router;
+// Routes related to assignments
+router.put('/:classId/assignments', (req, res) => {
+    const { classId } = req.params;
+    const { assignmentId, startDate, endDate } = req.body;
+    const classAssignment = {
+        startDate,
+        endDate,
+        assignmentId
+    };
 
-//TODO remove/add class ids to student document as well
+    Class.findOneAndUpdate({ _id: classId }, { $push: { classAssignments: classAssignment } })
+        .then(() => res.json('Success, assignment added to class!'))
+        .catch(err => res.status(err).json(err));
+});
+
+router.delete('/:classId/assignments/:assignmentId', (req, res) => {
+    const { classId, assignmentId } = req.params;
+    Class.findOneAndUpdate({ _id: classId }, { $pull: { classAssignments: { _id: assignmentId } } })
+        .then(() => res.json('Success, assignment removed from class!'))
+        .catch(err => res.status(500).json(err));
+});
+
+module.exports = router;

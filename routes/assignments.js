@@ -47,20 +47,24 @@ router.put('/:id', (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
-// This throws a warning for setting header after they are sent to client
+// Make sure to remove the assignment from any classes it's currently assigned tod
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
     Assignment.findOneAndDelete({ _id: id })
         .then(assignment => {
             if (!assignment) {
                 res.status(404).json('Assignment not found');
+                throw new Error('break');
             } else {
                 return assignment.teacher;
             }
         })
         .then(teacherId => Teacher.findOneAndUpdate({ _id: teacherId }, { $pull: { assignments: id } }))
         .then(() => res.json('Success, assignment deleted!'))
-        .catch(err => res.status(500).json(err));
+        .catch(err => {
+            if (err.message === 'break') return;
+            res.status(500).json(err)
+        });
 });
 
 // Routes related to questions
@@ -117,5 +121,7 @@ router.delete('/:assignmentId/questions/:id', (req, res) => {
         .then(() => res.json('Success, question deleted!'))
         .catch(err => res.status(500).json(err));
 });
+
+//TODO endpoint to edit classAssignments (specifically the times)
 
 module.exports = router;
