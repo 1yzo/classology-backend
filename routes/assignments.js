@@ -33,10 +33,18 @@ router.get('/:id', (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
-router.update('/:id', (req, res) => {
+router.put('/:id', (req, res) => {
     const { id } = req.params;
-    const { updates } = req.body;
-    Assignment.updateOne({ _id: id }, { ...updates });
+    const updates = req.body;
+    Assignment.updateOne({ _id: id }, { ...updates })
+        .then(info => {
+            if (info.n === 1) {
+                res.json('Success, assignment updated!');
+            } else {
+                res.status(404).json('Assignment not found');
+            }
+        })
+        .catch(err => res.status(500).json(err));
 });
 
 router.delete('/:id', (req, res) => {
