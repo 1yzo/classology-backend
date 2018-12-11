@@ -47,6 +47,7 @@ router.put('/:id', (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
+// This throws a warning for setting header after they are sent to client
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
     Assignment.findOneAndDelete({ _id: id })
@@ -54,10 +55,14 @@ router.delete('/:id', (req, res) => {
             if (!assignment) {
                 res.status(404).json('Assignment not found');
             } else {
-                res.json('Success, assignment deleted!');
+                return assignment.teacher;
             }
-        });
+        })
+        .then(teacherId => Teacher.findOneAndUpdate({ _id: teacherId }, { $pull: { assignments: id } }))
+        .then(() => res.json('Success, assignment deleted!'))
+        .catch(err => res.status(500).json(err));
 });
+
 // Routes related to questions
 router.post('/:assignmentId/questions', (req, res) => {
     const { assignmentId } = req.params;
@@ -114,5 +119,3 @@ router.delete('/:assignmentId/questions/:id', (req, res) => {
 });
 
 module.exports = router;
-
-// TODO setup update for assignments and questions
