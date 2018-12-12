@@ -5,6 +5,7 @@ const ObjectId = mongoose.SchemaTypes.ObjectId;
 const gradeSchema = new Schema({
     assignmentName: { type: String, required: true },
     assignmentId: { type: ObjectId, required: true },
+    classAssignmentId: { type: ObjectId, require: true },
     correct: [Number],  // question numbers
     incorrect: [Number]
 });

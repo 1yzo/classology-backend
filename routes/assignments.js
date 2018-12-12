@@ -122,6 +122,4 @@ router.delete('/:assignmentId/questions/:id', (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
-//TODO endpoint to edit classAssignments (specifically the times)
-
 module.exports = router;
