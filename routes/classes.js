@@ -88,7 +88,7 @@ router.delete('/:classId/students/:studentId', (req, res) => {
 });
 
 // Routes related to assignments
-router.put('/:classId/assignments', (req, res) => {
+router.post('/:classId/assignments', (req, res) => {
     const { classId } = req.params;
     const { assignmentId, startDate, endDate } = req.body;
     const classAssignment = {
@@ -109,6 +109,25 @@ router.delete('/:classId/assignments/:assignmentId', (req, res) => {
         .catch(err => res.status(500).json(err));
 });
 
-//TODO endpoint to edit classAssignments (specifically the times)
+router.put('/:classId/assignments/:assignmentId', (req, res) => {
+    const { classId, assignmentId } = req.params;
+    const updates = req.body;
+    Class.findOne({ _id: classId })
+        .then(classPayload => {
+            const assignment = classPayload.classAssignments.id(assignmentId);
+            if (assignment) {
+                assignment.set(updates);
+                return classPayload.save();
+            }
+        })
+        .then(info => {
+            if (!info) {
+                res.status(404).json('Assignment not found');
+            } else {
+                res.json('Success, assignment updated!');
+            }
+        })
+        .catch(err => res.status(500).json(err));
+});
 
 module.exports = router;
